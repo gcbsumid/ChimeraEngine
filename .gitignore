@@ -1,0 +1,6 @@
+# Sublime Projects
+*.sublime-project
+*.sublime-workspace
+
+# CTags
+*.tags*
