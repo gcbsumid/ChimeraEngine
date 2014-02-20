@@ -1,6 +1,7 @@
 #ifndef INPUT_MANAGER_HPP
 #define INPUT_MANAGER_HPP
 
+#include <thread>
 #include <memory>
 
 namespace Chimera {
@@ -15,5 +16,9 @@ namespace Chimera {
         void HandleKeyPress(double elapsedTime);
         void HandleMouseMotion(double elapsedTime);
         void HandleMouseButton(double elapsedTime);
+
+        std::shared_ptr<std::thread> mThread;
     };
 }
+
+#endif

@@ -2,6 +2,7 @@
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
 
+#include <iostream>
 #include <stdexcept>
 #include <chrono>
 
@@ -13,7 +14,7 @@ const glm::vec2 SCREEN_SIZE(1200, 800);
 
 GraphicsManager::GraphicsManager() {
     if (!glfwInit()) 
-        throw runtime_error("GLFW Error: glfwInit() failed.");
+        throw std::runtime_error("GLFW Error: glfwInit() failed.");
 
     // open a window in GLFW
     glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -21,15 +22,15 @@ GraphicsManager::GraphicsManager() {
     glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 3);
     glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, GL_TRUE);
     if (!glfwOpenWindow(SCREEN_SIZE.x, SCREEN_SIZE.y, 8, 8, 8, 8, 32, 24, GLFW_WINDOW)) 
-        throw runtime_error("GLFW Error: glfwOpenWindow() failed. Hardware can't handle OpenGL 3.3");
+        throw std::runtime_error("GLFW Error: glfwOpenWindow() failed. Hardware can't handle OpenGL 3.3");
 
     // initialize GLEW 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) 
-        throw runtime_error("GLEW Error: glewInit() failed.");
+        throw std::runtime_error("GLEW Error: glewInit() failed.");
 
     if (!GLEW_VERSION_3_3) 
-        throw runtime_error("GLEW Error: OpenGL 3.3 Api is not availavle.");
+        throw std::runtime_error("GLEW Error: OpenGL 3.3 Api is not availavle.");
 
     glfwDisable(GLFW_MOUSE_CURSOR);
     glfwSetMousePos(0,0);
@@ -41,6 +42,8 @@ GraphicsManager::GraphicsManager() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glDepthFunc(GL_LEQUAL);
+
+    mThread = std::shared_ptr<std::thread>(new std::thread(&GraphicsManager::Run, this));
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -75,5 +78,5 @@ void GraphicsManager::Run() {
 }
 
 void GraphicsManager::Render() {
-    
+
 }

@@ -5,7 +5,7 @@
 using namespace Chimera;
 
 InputManager::InputManager() {
-
+    mThread = std::shared_ptr<std::thread>(new std::thread(&InputManager::Run, this));
 }
 
 InputManager::~InputManager() {
@@ -14,7 +14,7 @@ InputManager::~InputManager() {
 
 void InputManager::Run() {
     while (!glfwGetKey(GLFW_KEY_ESC)) {
-        HandleKeyPress();
+        HandleKeyPress(0.3);
 
     }
 }

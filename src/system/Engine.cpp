@@ -7,8 +7,8 @@
 using namespace Chimera;
 
 Engine::Engine() {
-    mGraphics = shared_ptr<GraphicsManager>(new GraphicsManager());
-    mInputManager = shared_ptr<InputManager>(new InputManager());
+    mGraphics = std::shared_ptr<GraphicsManager>(new GraphicsManager());
+    mInput = std::shared_ptr<InputManager>(new InputManager());
 }
 
 Engine::~Engine() {
@@ -16,10 +16,10 @@ Engine::~Engine() {
 }
 
 void Engine::Run() {
-    mThreads.push_back(std::thread(mGraphicsManager.Run));
-    mThreads.push_back(std::thread(mInputManager.Run));
+    // mThreads.push_back(new std::thread(&GraphicsManager::Run, mGraphics));
+    // mThreads.push_back(new std::thread(&InputManager::Run, mInput));
 
-    for (int i = 0; i < mThreads.size(); i++) {
-        mThreads.at(i).join();
-    }
+    // for (auto& thread : mThreads) {
+    //     thread->join();
+    // }
 }

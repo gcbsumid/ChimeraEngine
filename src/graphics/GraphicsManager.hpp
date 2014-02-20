@@ -1,15 +1,22 @@
 #ifndef GRAPHICS_MANAGER_HPP
 #define GRAPHICS_MANAGER_HPP
 
+#include <memory>
+#include <thread>
+
 namespace Chimera {
     class GraphicsManager {
     public:
         GraphicsManager();
         ~GraphicsManager();
 
-        bool Run();
+        void Run();
                 
     private:
-        bool Render();
+        void Render();
+
+        std::shared_ptr<std::thread> mThread;
     };
 }
+
+#endif

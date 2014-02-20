@@ -10,7 +10,7 @@ AIDIR = src/ai
 ANIMATIONDIR = src/animation
 INPUTDIR = src/input
 PHYSICSDIR = src/physics
-RENDERERDIR = src/graphics
+GRAPHICSDIR = src/graphics
 AUDIODIR = src/audio
 HUDDIR = src/hud
 NETWORKINGDIR = src/networking
@@ -28,7 +28,8 @@ ifeq ($(config),debug)
 	TARGET 		= $(TARGETDIR)/chimera.debug
 	DEFINES 	= -DDEBUG
 	INCLUDES   := -Ithirdparty/stb_image -I/opt/local/include
-	COMPILER   := -std=c++11 -stdlib=libc++ -lc++ -lsupc++ -lpthread
+	STDLIB 	   := -stdlib=libc++ -lc++ -lsupc++ 
+	COMPILER   := -std=c++11 -pthread
 	CPPFLAGS   := -MMD -MP $(DEFINES) -g -Wall $(INCLUDES) $(COMPILER)
 	CXXFLAGS   := $(CPPFLAGS) -fcolor-diagnostics -ferror-limit=5
 	LDFLAGS 	= 
@@ -52,6 +53,9 @@ endif
 OBJECTS := \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/Engine.o \
+	$(OBJDIR)/GraphicsManager.o \
+	$(OBJDIR)/InputManager.o \
+
 
 .PHONY: clean
 
@@ -84,7 +88,17 @@ run: ${TARGET}
 
 # ----------------------- Compile Graphics Folder ------------------------------ #
 
+$(OBJDIR)/GraphicsManager.o: $(GRAPHICSDIR)/GraphicsManager.cpp
+	@echo $(notdir $<)
+	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
 # ----------------------- Compile HUD Folder ------------------------------ #
+
+# ----------------------- Compile Input Folder ------------------------------ #
+
+$(OBJDIR)/InputManager.o: $(INPUTDIR)/InputManager.cpp
+	@echo $(notdir $<)
+	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 # ----------------------- Compile Networking Folder ------------------------------ #
 

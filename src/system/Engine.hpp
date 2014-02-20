@@ -4,11 +4,11 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
-#include <list>
+#include <vector>
 #include <thread>
 
-#include "GraphicsManager.hpp"
-#include "InputManager.hpp"
+#include "../graphics/GraphicsManager.hpp"
+#include "../input/InputManager.hpp"
 
 namespace Chimera {
     class Engine {
@@ -22,7 +22,7 @@ namespace Chimera {
         std::shared_ptr<GraphicsManager> mGraphics;
         std::shared_ptr<InputManager> mInput;
 
-        std::list<std::thread> mThreads;
+        std::vector<std::thread*> mThreads;
 
         // GraphicsManager mGraphicsManager;
         // AiManager       mAiManager;
