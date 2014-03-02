@@ -5,10 +5,11 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include <thread>
 
 #include "../graphics/GraphicsSystem.hpp"
 #include "../input/InputSystem.hpp"
+
+#include "TaskManager.hpp"
 
 namespace Chimera {
     class Engine {
@@ -19,10 +20,20 @@ namespace Chimera {
         void Run();
 
     private:
+
+        // System
         std::shared_ptr<GraphicsSystem> mGraphics;
         std::shared_ptr<InputSystem> mInput;
 
-        std::vector<std::thread*> mThreads;
+        // Managers
+        std::shared_ptr<TaskManager> mTaskManager;
+        // std::shared_ptr<PlatformManager> mPlatformManager;
+        // std::shared_ptr<StateManager> mStateManager;
+        // std::shared_ptr<ServiceManager> mServiceManager;
+        // std::shared_ptr<Loader> mLoader;
+
+
+
 
         // GraphicsManager mGraphicsManager;
         // AiManager       mAiManager;

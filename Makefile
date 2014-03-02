@@ -28,31 +28,32 @@ ifeq ($(config),debug)
 	TARGET 		= $(TARGETDIR)/chimera.debug
 	DEFINES 	= -DDEBUG
 	INCLUDES   := -Ithirdparty/stb_image -I/opt/local/include
-	STDLIB 	   := -stdlib=libc++ -lc++ -lsupc++ 
-	COMPILER   := -std=c++11 -pthread
+	STDLIB 	   := -lc++ -lsupc++ 
+	COMPILER   := -std=c++11 -stdlib=libc++ -pthread 
 	CPPFLAGS   := -MMD -MP $(DEFINES) -g -Wall $(INCLUDES) $(COMPILER)
 	CXXFLAGS   := $(CPPFLAGS) -fcolor-diagnostics -ferror-limit=5
 	LDFLAGS 	= 
 	MAGICK     := `Magick++-config --cppflags --cxxflags --ldflags --libs`
-	LIBS       := -lGL -lglfw -lGLEW -lassimp -lMagick++ 
+	LIBS       := -lGL -lglfw -lGLEW -lassimp -lMagick++ -lc++ -lsupc++ 
 endif
 
-ifeq ($(config),release)
-	OBJDIR 		= obj
-	TARGET 		= $(TARGETDIR)/chimera.release
-	DEFINES 	= -DNDEBUG
-	INCLUDES   := -Ithirdparty/stb_image -I/opt/local/include
-	COMPILER   := -std=c++11 -stdlib=libc++ -lc++ -lsupc++ -lpthread
-	CPPFLAGS   := -MMD -MP $(DEFINES) -02 -Wall $(COMPILER)
-	CXXFLAGS   := $(CPPFLAGS) -fcolor-diagnostics -ferror-limit=5
-	LDFLAGS 	= -s
-	MAGICK      = `Magick++-config --cppflags --cxxflags --ldflags --libs`
-	LIBS       += -lGL -lglfw -lGLEW -lassimp -lMagick++ 
-endif
+# ifeq ($(config),release)
+# 	OBJDIR 		= obj
+# 	TARGET 		= $(TARGETDIR)/chimera.release
+# 	DEFINES 	= -DNDEBUG
+# 	INCLUDES   := -Ithirdparty/stb_image -I/opt/local/include
+# 	COMPILER   := -std=c++11 -stdlib=libc++ -lc++ -lsupc++ -lpthread
+# 	CPPFLAGS   := -MMD -MP $(DEFINES) -02 -Wall $(COMPILER)
+# 	CXXFLAGS   := $(CPPFLAGS) -fcolor-diagnostics -ferror-limit=5
+# 	LDFLAGS 	= -s
+# 	MAGICK      = `Magick++-config --cppflags --cxxflags --ldflags --libs`
+# 	LIBS       += -lGL -lglfw -lGLEW -lassimp -lMagick++ 
+# endif
 
 OBJECTS := \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/Engine.o \
+	$(OBJDIR)/TaskManager.o \
 	$(OBJDIR)/GraphicsSystem.o \
 	$(OBJDIR)/InputSystem.o \
 
@@ -117,6 +118,10 @@ $(OBJDIR)/main.o: $(SYSTEMDIR)/main.cpp
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Engine.o: $(SYSTEMDIR)/Engine.cpp 
+	@echo $(notdir $<)
+	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/TaskManager.o: $(SYSTEMDIR)/TaskManager.cpp 
 	@echo $(notdir $<)
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

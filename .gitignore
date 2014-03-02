@@ -4,3 +4,11 @@
 
 # CTags
 *.tags*
+
+# Object files
+*.o
+*.d
+
+# Executable
+*.debug
+*.release
