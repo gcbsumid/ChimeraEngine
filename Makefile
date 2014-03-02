@@ -53,7 +53,6 @@ endif
 OBJECTS := \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/Engine.o \
-	$(OBJDIR)/TaskManager.o \
 	$(OBJDIR)/GraphicsSystem.o \
 	$(OBJDIR)/InputSystem.o \
 
@@ -118,10 +117,6 @@ $(OBJDIR)/main.o: $(SYSTEMDIR)/main.cpp
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/Engine.o: $(SYSTEMDIR)/Engine.cpp 
-	@echo $(notdir $<)
-	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/TaskManager.o: $(SYSTEMDIR)/TaskManager.cpp 
 	@echo $(notdir $<)
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

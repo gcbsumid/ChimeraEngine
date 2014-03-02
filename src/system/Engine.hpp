@@ -32,9 +32,6 @@ namespace Chimera {
         // std::shared_ptr<ServiceManager> mServiceManager;
         // std::shared_ptr<Loader> mLoader;
 
-
-
-
         // GraphicsManager mGraphicsManager;
         // AiManager       mAiManager;
         // AudioManager
