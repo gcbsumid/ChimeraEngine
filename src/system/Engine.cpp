@@ -7,8 +7,8 @@
 using namespace Chimera;
 
 Engine::Engine() {
-    mGraphics = std::shared_ptr<GraphicsManager>(new GraphicsManager());
-    mInput = std::shared_ptr<InputManager>(new InputManager());
+    mGraphics = std::shared_ptr<GraphicsSystem>(new GraphicsSystem());
+    mInput = std::shared_ptr<InputSystem>(new InputSystem());
 }
 
 Engine::~Engine() {

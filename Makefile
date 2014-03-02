@@ -53,8 +53,8 @@ endif
 OBJECTS := \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/Engine.o \
-	$(OBJDIR)/GraphicsManager.o \
-	$(OBJDIR)/InputManager.o \
+	$(OBJDIR)/GraphicsSystem.o \
+	$(OBJDIR)/InputSystem.o \
 
 
 .PHONY: clean
@@ -88,7 +88,7 @@ run: ${TARGET}
 
 # ----------------------- Compile Graphics Folder ------------------------------ #
 
-$(OBJDIR)/GraphicsManager.o: $(GRAPHICSDIR)/GraphicsManager.cpp
+$(OBJDIR)/GraphicsSystem.o: $(GRAPHICSDIR)/GraphicsSystem.cpp
 	@echo $(notdir $<)
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
@@ -96,7 +96,7 @@ $(OBJDIR)/GraphicsManager.o: $(GRAPHICSDIR)/GraphicsManager.cpp
 
 # ----------------------- Compile Input Folder ------------------------------ #
 
-$(OBJDIR)/InputManager.o: $(INPUTDIR)/InputManager.cpp
+$(OBJDIR)/InputSystem.o: $(INPUTDIR)/InputSystem.cpp
 	@echo $(notdir $<)
 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

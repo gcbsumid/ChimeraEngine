@@ -7,8 +7,8 @@
 #include <vector>
 #include <thread>
 
-#include "../graphics/GraphicsManager.hpp"
-#include "../input/InputManager.hpp"
+#include "../graphics/GraphicsSystem.hpp"
+#include "../input/InputSystem.hpp"
 
 namespace Chimera {
     class Engine {
@@ -19,8 +19,8 @@ namespace Chimera {
         void Run();
 
     private:
-        std::shared_ptr<GraphicsManager> mGraphics;
-        std::shared_ptr<InputManager> mInput;
+        std::shared_ptr<GraphicsSystem> mGraphics;
+        std::shared_ptr<InputSystem> mInput;
 
         std::vector<std::thread*> mThreads;
 
