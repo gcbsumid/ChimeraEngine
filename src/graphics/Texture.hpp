@@ -5,7 +5,7 @@
 
 #include <string>
 #include <memory>
-#include <ImageMagick/Magick++.h>
+#include <Magick++.h>
 #include "Program.hpp"
 
 class Texture {

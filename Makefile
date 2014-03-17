@@ -21,19 +21,20 @@ SCRIPTINGDIR = src/scripting
 # Note: -fcolor-diagnostics, for some reason, is defaulted to false in Clang 3.4
 
 
-CXX = clang++
+CXX = g++
 
 ifeq ($(config),debug)
 	OBJDIR 		= obj
 	TARGET 		= $(TARGETDIR)/chimera.debug
 	DEFINES 	= -DDEBUG
-	INCLUDES   := -Ithirdparty/stb_image -I/opt/local/include -I/usr/include/ImageMagick
+	INCLUDES   :=  -I/opt/local/include -I/usr/include/ImageMagick
 	STDLIB 	   := -lc++ -lsupc++ 
-	COMPILER   := -std=c++11 -stdlib=libc++ -pthread 
-	CPPFLAGS   := -MMD -MP $(DEFINES) -g -Wall $(INCLUDES) $(COMPILER)
-	CXXFLAGS   := $(CPPFLAGS) -fcolor-diagnostics -ferror-limit=5
+	COMPILER   :=  -pthread # -stdlib=libc++
+	MAGICK      = `Magick++-config --cppflags --cxxflags`
+	CPPFLAGS   := -g -Wall -MMD -std=c++11 # -MP $(DEFINES) $(INCLUDES) 
+	CXXFLAGS   := $(CPPFLAGS) # -fcolor-diagnostics -ferror-limit=5
 	LDFLAGS 	=
-	LIBS       := -lc++ -lsupc++ -lGL -lglfw -lGLEW -lassimp -lMagick++ -lMagickCore -lMagickWand
+	LIBS       := -lc++ -lsupc++ -lGL -lglfw -lGLEW -lassimp `Magick++-config --ldflags --libs`
 endif
 
 # ifeq ($(config),release)
@@ -49,7 +50,19 @@ endif
 # 	LIBS       += -lGL -lglfw -lGLEW -lassimp -lMagick++ 
 # endif
 
-OBJECTS := \
+
+SOURCES = \
+	$(SYSTEMDIR)/main.cpp \
+	$(SYSTEMDIR)/Engine.cpp \
+	$(SYSTEMDIR)/PlatformManager.cpp \
+	$(GRAPHICSDIR)/Program.cpp \
+	$(GRAPHICSDIR)/Shader.cpp \
+	$(GRAPHICSDIR)/Texture.cpp \
+	$(GRAPHICSDIR)/Mesh.cpp \
+	$(GRAPHICSDIR)/GraphicsSystem.cpp \
+	$(INPUTDIR)/InputSystem.cpp \
+
+OBJECTS = \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/Engine.o \
 	$(OBJDIR)/Program.o \
@@ -60,13 +73,25 @@ OBJECTS := \
 	$(OBJDIR)/InputSystem.o \
 	$(OBJDIR)/PlatformManager.o \
 
+DEPENDS = \
+	$(OBJDIR)/main.d \
+	$(OBJDIR)/Engine.d \
+	$(OBJDIR)/Program.d \
+	$(OBJDIR)/Shader.d \
+	$(OBJDIR)/Texture.d \
+	$(OBJDIR)/Mesh.d \
+	$(OBJDIR)/GraphicsSystem.d \
+	$(OBJDIR)/InputSystem.d \
+	$(OBJDIR)/PlatformManager.d \
 
 .PHONY: clean
 
 all: $(TARGETDIR) $(OBJDIR) ${TARGET}
 
+# depend: $(DEPENDS)
+
 $(TARGET): $(TARGETDIR) $(OBJDIR) $(OBJECTS)
-	$(CXX) $(LDFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) 
+	$(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(LIBS)
 
 $(OBJDIR):
 	@echo "Creating $(OBJDIR)"
@@ -84,13 +109,45 @@ clean:
 run: ${TARGET}
 	./${TARGET}
 
-# ----------------------- Compile AI Folder --------------------------------- #
 
-# ----------------------- Compile Audio Folder ------------------------------ #
+$(OBJDIR)/%.o: $(SYSTEMDIR)/%.cpp 
+	@echo $(notdir $<)
+	@ $(CXX) $(MAGICK) -o $@ -MF $(@:%.o=%.d) -c $(CXXFLAGS) $(COMPILER) $<
 
-# ----------------------- Compile Game Folder ------------------------------ #
+$(OBJDIR)/%.o: $(INPUTDIR)/%.cpp
+	@echo $(notdir $<)
+	@ $(CXX) $(MAGICK) -o $@ -MF $(@:%.o=%.d) -c $(CXXFLAGS) $(COMPILER) $<
 
-# ----------------------- Compile Graphics Folder ------------------------------ #
+$(OBJDIR)/%.o: $(GRAPHICSDIR)/%.cpp 
+	@echo $(notdir $<)
+	@ $(CXX) $(MAGICK) -o $@ -MF $(@:%.o=%.d) -c $(CXXFLAGS) $(COMPILER) $<
+
+# $(OBJDIR)/%.d: $(SYSTEMDIR)/%.cpp 
+# 	 set -e; $(CC) -M $(MAGICK) $(CPPFLAGS) $< \
+#         | sed 's/\(obj\/$*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+#         [ -s $@ ] || rm -f $@
+
+
+# $(OBJDIR)/%.d: $(INPUTDIR)/%.cpp
+# 	 set -e; $(CC) -M $(MAGICK) $(CPPFLAGS) $< \
+#         | sed 's/\(obj\/$*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+#         [ -s $@ ] || rm -f $@
+
+# $(OBJDIR)/%.d: $(GRAPHICSDIR)/%.cpp
+# 	 set -e; $(CC) -M $(MAGICK) $(CPPFLAGS) $< \
+#         | sed 's/\(obj\/$*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+#         [ -s $@ ] || rm -f $@
+
+
+# include $(DEPENDS)
+
+# # ----------------------- Compile AI Folder --------------------------------- #
+
+# # ----------------------- Compile Audio Folder ------------------------------ #
+
+# # ----------------------- Compile Game Folder ------------------------------ #
+
+# # ----------------------- Compile Graphics Folder ------------------------------ #
 
 # $(OBJDIR)/GraphicsSystem.o: $(GRAPHICSDIR)/GraphicsSystem.cpp
 # 	@echo $(notdir $<)
@@ -112,42 +169,42 @@ run: ${TARGET}
 # 	@echo $(notdir $<)
 # 	@ $(CXX)  $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<" 
 
-	
-$(OBJDIR)/%.o: $(GRAPHICSDIR)/%.cpp
-	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
 
-$(OBJDIR)/%.d: $(GRAPHICSDIR)/%.cpp
-	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
-        | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
-        [ -s $@ ] || rm -f $@
+# # $(OBJDIR)/%.o: $(GRAPHICSDIR)/%.cpp
+# # 	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
 
-# ----------------------- Compile HUD Folder ------------------------------ #
+# # $(OBJDIR)/%.d: $(GRAPHICSDIR)/%.cpp
+# # 	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
+# #         | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+# #         [ -s $@ ] || rm -f $@
 
-# ----------------------- Compile Input Folder ------------------------------ #
+# # ----------------------- Compile HUD Folder ------------------------------ #
+
+# # ----------------------- Compile Input Folder ------------------------------ #
 
 # $(OBJDIR)/InputSystem.o: $(INPUTDIR)/InputSystem.cpp
 # 	@echo $(notdir $<)
 # 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/%.o: $(INPUTDIR)/%.cpp
-	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
+# # $(OBJDIR)/%.o: $(INPUTDIR)/%.cpp
+# # 	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
 
-$(OBJDIR)/%.d: $(INPUTDIR)/%.cpp
-	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
-        | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
-        [ -s $@ ] || rm -f $@
+# # $(OBJDIR)/%.d: $(INPUTDIR)/%.cpp
+# # 	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
+# #         | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+# #         [ -s $@ ] || rm -f $@
 
-# ----------------------- Compile Networking Folder ------------------------------ #
+# # ----------------------- Compile Networking Folder ------------------------------ #
 
-# ----------------------- Compile Particle Folder ------------------------------ #
+# # ----------------------- Compile Particle Folder ------------------------------ #
 
-# ----------------------- Compile Physics Folder ------------------------------ #
+# # ----------------------- Compile Physics Folder ------------------------------ #
 
-# ----------------------- Compile Resource Folder ------------------------------ #
+# # ----------------------- Compile Resource Folder ------------------------------ #
 
-# ----------------------- Compile Scripting Folder ------------------------------ #
+# # ----------------------- Compile Scripting Folder ------------------------------ #
 
-# ----------------------- Compile System Folder ------------------------------- #
+# # ----------------------- Compile System Folder ------------------------------- #
 
 # $(OBJDIR)/main.o: $(SYSTEMDIR)/main.cpp
 # 	@echo $(notdir $<)
@@ -161,15 +218,15 @@ $(OBJDIR)/%.d: $(INPUTDIR)/%.cpp
 # 	@echo $(notdir $<)
 # 	@ $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/%.o: $(SYSTEMDIR)/%.cpp
-	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
+# # $(OBJDIR)/%.o: $(SYSTEMDIR)/%.cpp
+# # 	$(CXX) $(MAGICK) -o $@ -c $(CXXFLAGS)$<
 
-$(OBJDIR)/%.d: $(SYSTEMDIR)/%.cpp
-	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
-        | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
-        [ -s $@ ] || rm -f $@
+# # $(OBJDIR)/%.d: $(SYSTEMDIR)/%.cpp
+# # 	 set -e; $(CC) -M $(MAGICK) $(CXXFLAGS) $< \
+# #         | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+# #         [ -s $@ ] || rm -f $@
 
-# ----------------------- End of stuff -------------------------------------- #
+# # ----------------------- End of stuff -------------------------------------- #
 
 
 # -include $(OBJECTS:%.o=%.d)

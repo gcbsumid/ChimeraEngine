@@ -26,7 +26,7 @@ bool Texture::Load() {
 
 
     try {
-        image = new Magick::Image(mFilename);
+        image = new Magick::Image("mFilename");
         image->write(&blob, "RGBA");
     } catch (Magick::Error& error) {
         cerr << "Error Loading texture '" << mFilename << "': " << error.what() << endl;
